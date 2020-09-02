@@ -1,0 +1,124 @@
+<!DOCTYPE html -->
+<html lang="ja">
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>Rテック不動産 | 住宅価格予測</title>
+
+      <!--Load leaflet -->
+      <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+      <!--Load vectorGrid plugin for Leaflet -->
+      <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
+      <!--Load the style stylesheet of leaflet -->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+
+      <script src="./js/Control.OSMGeocoder.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+      
+      <!-- plugin Leaflet.Coordinates -->
+      <link rel="stylesheet" href="./css/Leaflet.Coordinates-0.1.5.css" />
+      <script src="./js/Leaflet.Coordinates-0.1.5.min.js"></script>
+
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+
+      <!-- plugin Leaflet.extra-markers -->
+      <link rel="stylesheet" href="./css/leaflet.extra-markers.min.css" />
+      <script src="./js/leaflet.extra-markers.min.js"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+      <!--Load the style stylesheet of leaflet -->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+      <link rel="stylesheet" href="./css/Control.OSMGeocoder.css" />
+
+      <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-zoomslider/v0.7.0/L.Control.Zoomslider.js'></script>
+      <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-zoomslider/v0.7.0/L.Control.Zoomslider.css' rel='stylesheet' />
+      
+      <link rel="stylesheet" href="./css/style.css" />
+
+      <script type="text/javascript">
+        <!--
+        function disp(url){
+          window.open(url, "window_name", "width=300,height=200,scrollbars=yes");
+        }
+      </script>
+    </head>
+    <body>
+      <div id="logoContainer">
+        <!-- <h1>Rテック不動産</h1> -->
+        <p>このサイトでは柏市周辺の戸建住宅に関する予測価格を提供しております。詳細は<a href="./sub.html" target="window_name" onClick="disp('./sub.html')" style="color: coral;">こちら</a></p>
+        <!-- <input id="model" type="submit" value="詳細" onClick="alert('Adj.R2 : 0.513\nMAPE : 26.7\nRMSLE : 0.28');"> -->
+        <!-- <input id="model" type="submit" value="詳細" onClick="disp('./sub.html');"> -->
+      </div> 
+      <div class="input prediction">
+        <form id="prediction">
+          <!-- 新築or中古 / 最寄駅-->
+          <div class="input-sub">
+            <label class="label station" for="station">最寄駅　</label>
+            <select class="input-box station" name="station" id="station" form="prediction">
+            <optgroup label="主要駅">
+              <option value="kashiwa 35.86203 139.9709 0.51">柏</option>
+              <option value="nagareyamaootakanomori 35.87167 139.9249 0.78">流山おおたかの森</option>
+            </optgroup>
+            <optgroup label="JR常磐線">
+              <option value="abiko 35.87278 140.0106 0.91">我孫子</option>
+              <option value="kashiwa 35.86203 139.9709 0.51">柏</option>
+              <option value="kitakashiwa 35.8757 139.988 0.96">北柏</option>
+              <option value="kitakogane 35.83317 139.9307 0.94">北小金</option>
+              <option value="minamikashiwa 35.84463 139.9542 0.90">南柏</option>
+            </optgroup>
+            <optgroup label="東武野田線">
+              <option value="edogawadai 35.89727 139.9105 0.99">江戸川台</option>
+              <option value="kashiwa 35.86203 139.9709 0.51">柏</option>
+              <option value="sakai 35.82322 139.9839 1.02">逆井</option>
+              <option value="shinkashiwa 35.83825 139.9669 1.01">新柏</option>
+              <option value="takayanagi 35.80814 139.9988 1.02">高柳</option>
+              <option value="toyoshiki 35.86655 139.9393 1.02">豊四季</option>
+              <option value="nagareyamaootakanomori 35.87167 139.9249 0.78">流山おおたかの森</option>
+              <option value="hatsuishi 35.88379 139.918 1.01">初石</option>
+              <option value="masuo 35.82978 139.9765 1.02">増尾</option>
+            </optgroup>
+            <optgroup label="つくばエクスプレス">
+              <option value="kashiwatanaka 35.91095 139.9576 1.03">柏たなか</option>
+              <option value="kashiwanohakyanpasu 35.89328 139.9525 0.97">柏の葉キャンパス</option>
+              <option value="nagareyamaootakanomori 35.87167 139.9249 0.78">流山おおたかの森</option>
+            </optgroup>
+            <optgroup label="新京成線">
+              <option value="gokou 35.79731 139.9658 0.98">五香</option>
+              <option value="tokiwadaira 35.80318 139.9496 1.01">常盤平</option>
+              <option value="motoyama 35.7904 139.9756 1.01">元山</option>
+            </optgroup>
+            </select>
+            <input class="input-box" type="radio" name="age" id="age1" value="new" checked="checked"/>新築
+            <input class="input-box" type="radio" name="age" id="age2" value="used"/>中古
+          </div>
+          <!-- 所要時間 -->
+          <div class="input-sub slider">
+            <label class="label" for="time">所要時間</label>
+            <input class="input-box" id="time" name="time" type="range" min="0" max="30" step="5"/>
+            徒歩<span class="current-value" id="cv-time">15</span>分
+          </div>
+          <!-- 敷地面積 -->
+          <div class="input-sub slider">
+            <label class="label" for="area">敷地面積</label>
+            <input class="input-box" id="area" name="area" type="range" min="100" max="200" step="10"/>
+            <span class="current-value" id="cv-area">150</span>㎡
+          </div>
+          <!-- 階数 -->
+          <div class="input-sub slider">
+            <label class="label" for="floors">階数　　</label>
+            <input class="input-box" id="floors" name="floors" type="range" min="1" max="3" step="1"/>
+            <span class="current-value" id="cv-floors">2</span>階建て
+          </div>
+          <!-- 予測ボタン -->
+          <input class="btn" id="btn" type="button" value="予測表示" />
+        </form>
+      </div>
+      <div class="output prediction" id="output"></div>
+      <main>
+        <div id="map" class="map"></div>
+      </main>
+      
+      <script src="./js/leaflet.sprite.js"></script>
+      <script src="./js/script.js"></script>
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    </body>
+</html>
